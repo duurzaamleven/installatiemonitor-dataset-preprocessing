@@ -276,8 +276,7 @@ Nog te doen:
 ## Status
 
 Project is: _in ontwikkeling_. De pipeline werkt end-to-end en is over de volledige dataset van
-6.283 woningen gedraaid. RVO/KITE heeft leestoegang; openbaar maken van de repository is een
-aparte stap.
+6.283 woningen gedraaid.
 
 ## Licentie
 

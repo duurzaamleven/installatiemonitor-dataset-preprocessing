@@ -18,11 +18,11 @@ Uit `data/raw/00_Informatie document IM dataset - 20260820.pdf` (§ Gebruiksvoor
 
 1. **Overleg met RVO/KITE gevoerd** (01-09-2026) over de vraag of een herbruikbare
    preprocessingpijplijn zelf al telt als "analyse" die met de KITE-community gedeeld moet worden.
-   Uitkomst: bevindingen uit deze preprocessing worden alvast met RVO/KITE gedeeld en RVO/KITE
-   heeft leestoegang tot deze repo gekregen. Wat "delen met de KITE-community" precies betekent
+   Uitkomst: bevindingen uit deze preprocessing worden alvast met RVO/KITE gedeeld, en RVO/KITE
+   is leestoegang tot deze repo aangeboden. Wat "delen met de KITE-community" precies betekent
    voor de code zelf is daarmee nog niet uitgesproken.
 2. **De code valt onder `EUPL-1.2`** (besluit van Kenniscentrum Duurzaam Leven, 19-10-2026). Tot
-   nu toe gebeurde delen gericht, via leestoegang voor RVO/KITE; openbaar maken van de repo is een
+   nu toe gebeurde delen gericht, met RVO/KITE; openbaar maken van de repo is een
    aparte stap. Zie [`LICENSE`](LICENSE) en ontwerp-preprocessing.md §4 en §10.1.
 3. **Melden bij KITE is sowieso verplicht** zodra deze preprocessing daadwerkelijk tegen de
    dataset draait, onafhankelijk van punt 1. Afgedekt met het overleg van 01-09-2026; de volledige
@@ -64,7 +64,7 @@ De link publiceren lekt dus niets. Hij helpt alleen niemand die geen lid is.
 
 | Punt | Status |
 |---|---|
-| Overleg RVO/KITE over publicatiescope | Gevoerd 01-09-2026; bevindingen gedeeld, RVO/KITE heeft leestoegang |
+| Overleg RVO/KITE over publicatiescope | Gevoerd 01-09-2026; bevindingen gedeeld, leestoegang aangeboden aan RVO/KITE |
 | Melding bij KITE van daadwerkelijk gebruik | Afgedekt met dat overleg |
 | Inhoudelijke datavragen (ontwerp §10.5-10.7) | Nog niet aan de orde geweest, mee te nemen in een volgend overleg |
 | Codelicentie | `EUPL-1.2`, besloten 19-10-2026; zie [`LICENSE`](LICENSE) |

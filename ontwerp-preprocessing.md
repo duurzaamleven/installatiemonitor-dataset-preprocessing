@@ -263,7 +263,7 @@ niet door mij te beslissen zijn:
    (a) alleen de *resultaten* van een analyse delen, of (b) ook code die zelf geen analyse-uitkomst
    bevat maar wel op de data draait. **Overleg met RVO/KITE gevoerd op 01-09-2026.** Uitkomst:
    bevindingen uit deze preprocessing worden alvast gedeeld met RVO/KITE, dat leestoegang tot deze
-   repo heeft gekregen. Wat "delen met de KITE-community" precies betekent voor de code zelf is
+   repo is aangeboden. Wat "delen met de KITE-community" precies betekent voor de code zelf is
    daarmee nog niet uitgesproken. **De repo blijft niet-publiek zolang Kenniscentrum Duurzaam Leven intern op de
    licentie studeert**, zie `LICENSE`. *Beantwoord: besloten 19-10-2026: EUPL-1.2, onder de naam
    Kenniscentrum Duurzaam Leven. Openbaar maken is een aparte stap.*
@@ -491,7 +491,7 @@ staan vanaf commit 1 in `.gitignore`, niet achteraf toegevoegd.
 
 1. Wat "delen met de KITE-community" precies inhoudt voor een preprocessing-repo (§4.1). Het
    overleg met RVO/KITE van 01-09-2026 heeft dat niet uitgesproken; wel is afgesproken dat
-   bevindingen gedeeld worden, en RVO/KITE heeft leestoegang tot deze repo. Of de repo publiek kan
+   bevindingen gedeeld worden, en RVO/KITE is leestoegang tot deze repo aangeboden. Of de repo publiek kan
    hangt nu op het interne licentiebesluit van Kenniscentrum Duurzaam Leven (punt 2), niet meer op een
    uitstaande vraag aan RVO/KITE. *Beantwoord via punt 2: het licentiebesluit is genomen; openbaar
    maken is een aparte stap.*

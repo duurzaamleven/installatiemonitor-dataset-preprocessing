@@ -1,0 +1,727 @@
+{
+  "name": "installatiemonitor-3-processed",
+  "title": "Installatiemonitor 3.0: voorbewerkte slimme-meterdata (getypeerde Parquet-tabellen)",
+  "description": "Voorbewerkte slimme-meterdata, woningkenmerken en weer van de 6.283 woningen met een warmtepomp in de RVO/KITE-dataset Installatiemonitor 3.0. Deze repo is niet de data-eigenaar; zie GEBRUIKSVOORWAARDEN.md voor de voorwaarden en voor hoe je de dataset zelf verkrijgt, en docs/datacatalogus.md voor de volledige beschrijving van elke tabel. Paden zijn relatief aan de uitvoermap van de pipeline (standaard data/processed/). Gegenereerd door im3_preprocessing.datapackage, niet met de hand bijgehouden.",
+  "version": "0.1.0",
+  "licenses": [
+    {
+      "name": "andere",
+      "title": "Geen open licentie. RVO stelt de dataset beschikbaar voor onderzoek en analyses met een maatschappelijk doel; gebruik moet gemeld worden bij KITE en uitkomsten moeten onder dezelfde voorwaarden gedeeld worden met de KITE-community. De data is niet vrij herverspreidbaar, ook niet in deze voorbewerkte vorm. Zie GEBRUIKSVOORWAARDEN.md in deze repo.",
+      "path": "GEBRUIKSVOORWAARDEN.md"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Installatiemonitor (ledenversie), KITE (Kennis- en Dataplatform Individuele Technieken), RVO: dataset_openbaar.zip; alleen voor ingelogde leden, zie GEBRUIKSVOORWAARDEN.md",
+      "path": "https://kennisdelen.rvo.nl/kite"
+    },
+    {
+      "title": "RVO, Installatiemonitor Dataset: omschrijving gebruiksvoorwaarden en toelichting op dataset, versie 1.0, 20 augustus 2026 (00_Informatie document IM dataset - 20260820.pdf, bijgeleverd in dataset_openbaar.zip)"
+    },
+    {
+      "title": "Poiesz, Janssen, Biemans, Wagener & Hommelberg, Installatiemonitor 3.0: de warmtepomp in de gebouwde omgeving, eindrapportage v1.02, 15 juni 2026",
+      "path": "https://kennisdelen.rvo.nl/kite/installatiemonitor"
+    },
+    {
+      "title": "KNMI-uurgegevens van de 28 weerstations, opgehaald met needforheat-dutch-weather-software",
+      "path": "https://github.com/energietransitie/needforheat-dutch-weather-software"
+    },
+    {
+      "title": "Calorische gaswaarden per uur, mijnenergiedata.nl (niet publiek gedocumenteerde API)",
+      "path": "https://www.mijnenergiedata.nl/calorische-gaswaarden/"
+    }
+  ],
+  "contributors": [
+    {
+      "title": "Rijksdienst voor Ondernemend Nederland (RVO), KITE",
+      "role": "publisher"
+    },
+    {
+      "title": "BDH, haalde als ODA de slimme-meterdata op (RVO-informatiedocument p. 2; eindrapportage §2.1)",
+      "role": "contributor"
+    },
+    {
+      "title": "Kenniscentrum Duurzaam Leven (deze voorbewerking)",
+      "role": "wrangler"
+    }
+  ],
+  "resources": [
+    {
+      "name": "homes",
+      "title": "Eén rij per woning: de 18 statische kenmerken uit de metadata, gestandaardiseerd",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "path": "homes.parquet",
+      "schema": {
+        "fields": [
+          {
+            "name": "home_id__str",
+            "type": "string",
+            "description": "Geanonimiseerde woningsleutel (bron: Customer_id), ook het getal in IM_customer_<id>.csv; joinsleutel naar measurements, quality en derived.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "installatiedatum_wp",
+            "type": "datetime",
+            "format": "default",
+            "description": "Maand van installatie van de warmtepomp (bron: Installatiedatum_hp, 'YYYY-MM'), als de eerste dag van die maand om 00:00 Europe/Amsterdam. Volgens RVO ook de aanmelddatum voor het project. Bevat onwaarschijnlijke jaartallen, zie datacatalogus §8."
+          },
+          {
+            "name": "heeft_thermostaat__bool",
+            "type": "boolean",
+            "description": "Programmeerbare thermostaat aanwezig (bron: Heeft_thermosstaat, 1/0).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "temp_dag_ingesteld__degC",
+            "type": "integer",
+            "description": "Daginstelling van de thermostaat, opgegeven door de bewoner (bron: Dag_temperatuur).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "temp_nacht_ingesteld__degC",
+            "type": "integer",
+            "description": "Nachtinstelling van de thermostaat, opgegeven door de bewoner (bron: Nacht_temperatuur).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "kookt_op_gas__bool",
+            "type": "boolean",
+            "description": "Koken op gas (bron: Koken_op_gas, 1/0).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "weerstation_nr",
+            "type": "integer",
+            "description": "KNMI-stationscode van het dichtstbijzijnde weerstation (bron: Weerstation_nr); koppelt de woning aan weer.weerstation_nr.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "weerstation_naam__cat",
+            "type": "string",
+            "description": "Naam van dat weerstation (bron: Weerstation naam)."
+          },
+          {
+            "name": "vloeroppervlak_bin__cat",
+            "type": "string",
+            "description": "Vloeroppervlak als bin in m2, bijvoorbeeld '115-124' (bron: Vloer_oppervlak); bewust geen getal."
+          },
+          {
+            "name": "heeft_ev_opgegeven__bool",
+            "type": "boolean",
+            "description": "Bewoner gaf een elektrische auto of laadpaal op (bron: EV_opgegeven, 1/0).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "isde_vermogen__kW",
+            "type": "integer",
+            "description": "Bivalent vermogen van de warmtepomp uit het ISDE-register (bron: ISDE vermogen); leeg als de bron -1 (onbekend) of niets bevat."
+          },
+          {
+            "name": "isde_vermogen_onbekend__bool",
+            "type": "boolean",
+            "description": "True als de bron voor ISDE vermogen de sentinel -1 (onbekend) had.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "verwarmingssysteem_ruw__cat",
+            "type": "string",
+            "description": "Het multi-selectveld Verwarmingssysteem letterlijk, komma-gescheiden; uitgesplitst in de heeft_*__bool-kolommen."
+          },
+          {
+            "name": "heeft_airco_verwarming__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Verwarmingssysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_all_electric_wp__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Verwarmingssysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_hr_ketel__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Verwarmingssysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_houtkachel__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Verwarmingssysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_hybride_wp__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Verwarmingssysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_infrarood_panelen_verwarming__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Verwarmingssysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_pvt__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Verwarmingssysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_stadswarmte__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Verwarmingssysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_ventilatiewarmtepomp__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Verwarmingssysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_warmtepompboiler__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Verwarmingssysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_zonneboiler__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Verwarmingssysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "afgiftesysteem_ruw__cat",
+            "type": "string",
+            "description": "Het multi-selectveld Afgiftesysteem letterlijk, komma-gescheiden; uitgesplitst in de heeft_*__bool-kolommen."
+          },
+          {
+            "name": "heeft_convectoren__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Afgiftesysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_convectorputten__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Afgiftesysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_elektrische_verwarming_afgifte__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Afgiftesysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_infraroodpanelen_afgifte__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Afgiftesysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_luchtverwarming__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Afgiftesysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_radiatoren__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Afgiftesysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "heeft_vloerverwarming__bool",
+            "type": "boolean",
+            "description": "True als dit systeem in het multi-selectveld Afgiftesysteem van de woning is aangevinkt (vaste taglijst in io.py, geverifieerd tegen alle voorkomende tokens).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "woningtype_bron_afgekapt__bool",
+            "type": "boolean",
+            "description": "True als Woningtype in de bron afgekapt was ('Rijwoning (tussen' of 'Rijwoning (hoek') en hier is hersteld.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "woningtype__cat",
+            "type": "string",
+            "description": "Woningtype (bron: Woningtype), met de twee afgekapte bronwaarden hersteld naar 'Rijwoning (tussenwoning)' en 'Rijwoning (hoekwoning)'."
+          },
+          {
+            "name": "type_glas__cat",
+            "type": "string",
+            "description": "Type beglazing, opgegeven door de bewoner (bron: Type_glas)."
+          },
+          {
+            "name": "muurisolatie_type__cat",
+            "type": "string",
+            "description": "Type muurisolatie, opgegeven door de bewoner (bron: Isolatie_type)."
+          },
+          {
+            "name": "vloerisolatie__cat",
+            "type": "string",
+            "description": "Vloerisolatie ja/nee/weet ik niet, opgegeven door de bewoner (bron: Vloer_isolatie_type)."
+          },
+          {
+            "name": "dakisolatie_type__cat",
+            "type": "string",
+            "description": "Kwaliteit dakisolatie, opgegeven door de bewoner (bron: Dak_isolatie_type)."
+          }
+        ],
+        "missingValues": [
+          ""
+        ],
+        "primaryKey": [
+          "home_id__str"
+        ]
+      }
+    },
+    {
+      "name": "measurements",
+      "title": "Elektriciteit per woning en interval (q/h/d/m), als gemiddeld vermogen",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "path": "measurements.parquet",
+      "schema": {
+        "fields": [
+          {
+            "name": "home_id__str",
+            "type": "string",
+            "description": "Woningsleutel, zie homes.home_id__str.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "tijdstip_start",
+            "type": "datetime",
+            "format": "default",
+            "description": "Begin van het interval waar de rij over gaat, tz-aware Europe/Amsterdam, voor alle vier de intervaltypen (wijkt af van de bronconventie, zie datacatalogus §4).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "interval_type__cat",
+            "type": "string",
+            "description": "Intervaltype uit de bronkolom interval: q (kwartier), h (uur), d (dag), m (maand).",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "q",
+                "h",
+                "d",
+                "m"
+              ]
+            }
+          },
+          {
+            "name": "interval_duur__s",
+            "type": "integer",
+            "description": "Lengte van het interval in seconden: 900 (q), 3600 (h), de werkelijke lokale kalenderdag (82.800, 86.400 of 90.000) voor d, de werkelijke lokale kalendermaand voor m.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "granulariteit__cat",
+            "type": "string",
+            "description": "Wat de bronwaarde was: kwartier_totaal, uur_totaal, dag_totaal of maand_gemiddeld_per_dag (een m-rij is het gemiddelde dagverbruik van die maand, geen maandtotaal).",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "kwartier_totaal",
+                "uur_totaal",
+                "dag_totaal",
+                "maand_gemiddeld_per_dag"
+              ]
+            }
+          },
+          {
+            "name": "e_net__W",
+            "type": "number",
+            "description": "Gemiddeld netto elektrisch vermogen over het interval (bron: elec in kWh, maal 3.600.000 en gedeeld door interval_duur__s, voor m-rijen door 86.400). Negatief is teruglevering."
+          }
+        ],
+        "missingValues": [
+          ""
+        ],
+        "primaryKey": [
+          "home_id__str",
+          "tijdstip_start",
+          "interval_type__cat"
+        ],
+        "foreignKeys": [
+          {
+            "fields": [
+              "home_id__str"
+            ],
+            "reference": {
+              "resource": "homes",
+              "fields": [
+                "home_id__str"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "weer",
+      "title": "Eigen KNMI-uurreeks per weerstation",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "path": "weer.parquet",
+      "schema": {
+        "fields": [
+          {
+            "name": "weerstation_nr",
+            "type": "integer",
+            "description": "KNMI-stationscode; koppelt aan homes.weerstation_nr.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "tijdstip",
+            "type": "datetime",
+            "format": "default",
+            "description": "Begin van het uur waarover de KNMI-waarde gaat, tz-aware Europe/Amsterdam.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "temp_buiten__degC",
+            "type": "number",
+            "description": "Buitentemperatuur (KNMI-uurwaarde T, maal 0,1)."
+          },
+          {
+            "name": "wind__m_s_1",
+            "type": "number",
+            "description": "Windsnelheid (KNMI-uurwaarde FH, maal 0,1)."
+          },
+          {
+            "name": "ghi__W_m_2",
+            "type": "number",
+            "description": "Globale horizontale instraling, gemiddeld over het uur (KNMI-uurwaarde Q in J/cm2, omgerekend naar W/m2)."
+          },
+          {
+            "name": "bron__cat",
+            "type": "string",
+            "description": "Herkomst: eigen_ingest (rauwe stationswaarde, standaard) of eigen_ingest_geointerpoleerd (alleen bij --weer-geointerpoleerd-diagnose). De door RVO meegeleverde reeks staat hier bewust niet in.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "eigen_ingest",
+                "eigen_ingest_geointerpoleerd"
+              ]
+            }
+          }
+        ],
+        "missingValues": [
+          ""
+        ],
+        "primaryKey": [
+          "weerstation_nr",
+          "tijdstip",
+          "bron__cat"
+        ]
+      }
+    },
+    {
+      "name": "quality",
+      "title": "Kwaliteitsvlaggen per measurements-rij",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "path": "quality.parquet",
+      "schema": {
+        "fields": [
+          {
+            "name": "home_id__str",
+            "type": "string",
+            "description": "Woningsleutel, zie homes.home_id__str.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "tijdstip_start",
+            "type": "datetime",
+            "format": "default",
+            "description": "Zelfde waarde als in de bijbehorende measurements-rij.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "interval_type__cat",
+            "type": "string",
+            "description": "Zelfde waarde als in de bijbehorende measurements-rij.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "q",
+                "h",
+                "d",
+                "m"
+              ]
+            }
+          },
+          {
+            "name": "e_net_ontbrekend__flag",
+            "type": "boolean",
+            "description": "True als e_net__W leeg (NaN) is. Een 0 telt als waarde, niet als ontbrekend.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "g_gebruik_ontbrekend__flag",
+            "type": "boolean",
+            "description": "True als g_gebruik__m3_s_1 leeg (NaN) is: geen gasmeting op deze rij (q-rijen hebben in de bron nooit gas) of een woning zonder gaskolom.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "g_gebruik_negatief__flag",
+            "type": "boolean",
+            "description": "True als g_gebruik__m3_s_1 < 0, False als >= 0, leeg als g_gebruik__m3_s_1 leeg is. Informatief, geen filter."
+          },
+          {
+            "name": "e_net_constante_reeks__flag",
+            "type": "boolean",
+            "description": "True als e_net__W over de HELE reeks van deze (woning, interval_type) nooit varieert (standaarddeviatie exact 0, minstens 2 niet-lege waarden); leeg waar e_net__W leeg is."
+          },
+          {
+            "name": "g_gebruik_constante_reeks__flag",
+            "type": "boolean",
+            "description": "Zelfde regel als e_net_constante_reeks__flag, op g_gebruik__m3_s_1."
+          },
+          {
+            "name": "e_net_uitschieter__flag",
+            "type": "boolean",
+            "description": "True als |e_net__W - gemiddelde| > 3 x standaarddeviatie, beide over dezelfde (woning, interval_type); leeg als e_net__W leeg is of die standaarddeviatie 0 of onbepaald is. Voorlopige drempel, informatief."
+          },
+          {
+            "name": "g_gebruik_uitschieter__flag",
+            "type": "boolean",
+            "description": "Zelfde regel als e_net_uitschieter__flag, op g_gebruik__m3_s_1."
+          }
+        ],
+        "missingValues": [
+          ""
+        ],
+        "primaryKey": [
+          "home_id__str",
+          "tijdstip_start",
+          "interval_type__cat"
+        ],
+        "foreignKeys": [
+          {
+            "fields": [
+              "home_id__str",
+              "tijdstip_start",
+              "interval_type__cat"
+            ],
+            "reference": {
+              "resource": "measurements",
+              "fields": [
+                "home_id__str",
+                "tijdstip_start",
+                "interval_type__cat"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "derived",
+      "title": "Gas (volumestroom, vermogen, calorische waarde) en gekoppeld weer per measurements-rij",
+      "format": "parquet",
+      "mediatype": "application/vnd.apache.parquet",
+      "path": "derived.parquet",
+      "schema": {
+        "fields": [
+          {
+            "name": "home_id__str",
+            "type": "string",
+            "description": "Woningsleutel, zie homes.home_id__str.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "tijdstip_start",
+            "type": "datetime",
+            "format": "default",
+            "description": "Zelfde waarde als in de bijbehorende measurements-rij.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "interval_type__cat",
+            "type": "string",
+            "description": "Zelfde waarde als in de bijbehorende measurements-rij.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "q",
+                "h",
+                "d",
+                "m"
+              ]
+            }
+          },
+          {
+            "name": "g_gebruik__m3_s_1",
+            "type": "number",
+            "description": "Gemiddelde gasvolumestroom over het interval (bron: gas in m3, gedeeld door interval_duur__s, voor m-rijen door 86.400). Leeg waar de bron geen gaswaarde heeft."
+          },
+          {
+            "name": "g_gebruik__W",
+            "type": "number",
+            "description": "Gasvermogen op basis van de bovenwaarde: g_gebruik__m3_s_1 x actual_gas_std_hhv__J_m_3."
+          },
+          {
+            "name": "actual_gas_std_hhv__J_m_3",
+            "type": "number",
+            "description": "Toegepaste calorische bovenwaarde van gas: landelijk gemiddelde per uur van mijnenergiedata.nl, gekoppeld zoals het weer; anders de vaste 35,17 MJ/m3.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "gas_hhv_bron__cat",
+            "type": "string",
+            "description": "Herkomst van actual_gas_std_hhv__J_m_3: mijnenergiedata_actueel of vast_gemiddelde_fallback.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "mijnenergiedata_actueel",
+                "vast_gemiddelde_fallback"
+              ]
+            }
+          },
+          {
+            "name": "weerkoppeling_methode__cat",
+            "type": "string",
+            "description": "Hoe het weer aan deze rij is gekoppeld: punt_interpolatie (q, lineair tussen de omliggende uren), punt_uur (h, exacte match), gemiddelde_dag (d), gemiddelde_maand (m), of ontbrekend_buiten_archief als er geen weerwaarde was.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "punt_interpolatie",
+                "punt_uur",
+                "gemiddelde_dag",
+                "gemiddelde_maand",
+                "ontbrekend_buiten_archief"
+              ]
+            }
+          },
+          {
+            "name": "temp_buiten__degC",
+            "type": "number",
+            "description": "Buitentemperatuur uit weer.parquet (bron eigen_ingest), gekoppeld volgens weerkoppeling_methode__cat."
+          },
+          {
+            "name": "wind__m_s_1",
+            "type": "number",
+            "description": "Windsnelheid uit weer.parquet (bron eigen_ingest), gekoppeld volgens weerkoppeling_methode__cat."
+          },
+          {
+            "name": "ghi__W_m_2",
+            "type": "number",
+            "description": "Instraling uit weer.parquet (bron eigen_ingest), gekoppeld volgens weerkoppeling_methode__cat."
+          }
+        ],
+        "missingValues": [
+          ""
+        ],
+        "primaryKey": [
+          "home_id__str",
+          "tijdstip_start",
+          "interval_type__cat"
+        ],
+        "foreignKeys": [
+          {
+            "fields": [
+              "home_id__str",
+              "tijdstip_start",
+              "interval_type__cat"
+            ],
+            "reference": {
+              "resource": "measurements",
+              "fields": [
+                "home_id__str",
+                "tijdstip_start",
+                "interval_type__cat"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

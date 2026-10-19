@@ -1,0 +1,53 @@
+# ALLE data blijft buiten git, niet alleen raw/interim/processed.
+# Zie GEBRUIKSVOORWAARDEN.md en ontwerp-preprocessing.md §3, principe 7: de IM3-dataset is geen
+# open data en mag niet via deze repo gedeeld worden. Dat geldt ook voor afgeleide tabellen:
+# een parquet met verbruiksrijen per woning is nog steeds IM3-data, alleen gestandaardiseerd.
+# Uitzondering: het gegenereerde, geaggregeerde kwaliteitsrapport in docs/data-quality.md.
+data/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Test/tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editors/OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Correspondentie blijft buiten git. Een concept-mail bevat vaak namen, standpunten in wording en
+# formuleringen die niet bedoeld zijn om vast te leggen; en eenmaal gecommit is dat niet meer terug
+# te nemen zonder de historie te herschrijven.
+*.mail.md
+*.mail.txt
+email-*.md
+*-concept.md
+*.eml
+
+# Logs van pipeline-runs
+run.log
+*.log
+
+# Eenmalige migratiescripts horen niet in de PR te landen (ontwerp-intervalsemantiek.md §5):
+# eenmalig gereedschap, geen reguliere codeweg. Zodra de pipeline zelf goed is en er een verse
+# volledige run overheen is gegaan, is dit alleen nog een onderhoudslast.
+migreer_*.py
+vergelijk_intervalsemantiek.py
+
+# Herleidbaarheidsanalyse: blijft buiten git tot de bronhouders op het rapport hebben kunnen
+# reageren (responsible disclosure). Daarna komt het rapport er als gewone commit bij.
+docs/herleidbaarheid.md
+docs/herleidbaarheid/
+analyse/herleidbaarheid/
+*NIET_PUBLICEREN*

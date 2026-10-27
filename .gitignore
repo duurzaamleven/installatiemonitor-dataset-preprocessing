@@ -44,10 +44,3 @@ run.log
 # volledige run overheen is gegaan, is dit alleen nog een onderhoudslast.
 migreer_*.py
 vergelijk_intervalsemantiek.py
-
-# Herleidbaarheidsanalyse: blijft buiten git tot de bronhouders op het rapport hebben kunnen
-# reageren (responsible disclosure). Daarna komt het rapport er als gewone commit bij.
-docs/herleidbaarheid.md
-docs/herleidbaarheid/
-analyse/herleidbaarheid/
-*NIET_PUBLICEREN*
